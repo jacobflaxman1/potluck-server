@@ -12,7 +12,7 @@ itemRouter
     .get((req, res, next) => {
         ItemService.getItemsById(req.app.get('db'), req.params.item_id)
         .then(items => {
-            res.json(items)
+            res.json(ItemService.serializeItem(items))
         })
         .catch(next)
     })

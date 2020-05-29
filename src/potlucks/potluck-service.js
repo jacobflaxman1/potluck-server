@@ -44,16 +44,21 @@ const PotluckService = {
     insertPost(db, newPotluck) {
         let potluck_id;
         return db
-            .raw(`INSERT INTO potluck_table (potluck_name, admin_user) VALUES ('${newPotluck.potluck_name}', ${newPotluck.user_id}) returning potluck_id;`)
-            .then(data => {
-                potluck_id = data.rows[0].potluck_id
+            .into('potluck_table')
+            .insert({potluck_name: newPotluck.potluck_name, admin_user: newPotluck.user_id})
+            .returning('potluck_id')
+            .then(rows => {
+                potluck_id = rows[0]
                 let result = newPotluck.potluck_items.map(item => {
-                    return `('${item}', ${potluck_id})`
+                    return ({ item_name: item, potluck_id: potluck_id })
                 }) 
-                return db.raw(`INSERT INTO items_table (item_name, potluck_id) VALUES ${result.join(',')} returning item_id`)
+                return db
+                    .into('items_table')
+                    .insert(result)
+                    .returning('item_id')
             })
-            .then(data => {
-                return db.raw(`INSERT INTO potluck_users_table (potluck_id, item_id, user_id) VALUES (${potluck_id}, ${data.rows[0].item_id}, ${newPotluck.user_id})`)
+            .then(rows => {
+                return db.raw(`INSERT INTO potluck_users_table (potluck_id, item_id, user_id) VALUES (${potluck_id}, ${rows[0]}, ${newPotluck.user_id})`)
             })
             .then(() => {
                 return potluck_id
@@ -84,7 +89,7 @@ const PotluckService = {
             .returning('potluck_id')
     },
     serializePotlucks(potlucks) {
-        return potlucks.map(this.serializePotluck)
+        return potlucks.map(potluck => this.serializePotluck(potluck))
     },
     serializePotluck(potluck) {
         const potluckTree = new Treeize()

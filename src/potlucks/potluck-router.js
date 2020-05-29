@@ -10,15 +10,13 @@ potluckRouter
     .post(requireAuth, jsonBodyParser, (req, res, next) => {
         const {potluck_name, potluck_items, potluck_people} = req.body
         const newPotluck = { potluck_name, potluck_items, potluck_people }
-
+        console.log('new potluck',newPotluck)
     for (const [key, value] of Object.entries(newPotluck))
         if (value == null)
          return res.status(400).json({
             error: `Missing '${key}' in request body`
       })
 
-      //VERIFY THAT potluck_people does not have undefined values
-      //or create a method that verifies the user name 
       let newPost;
 
       newPotluck.user_id = req.user.user_id
@@ -30,7 +28,7 @@ potluckRouter
           PotluckService.getPotluckById(req.app.get('db'), id)
             .then((newPost) => {
                 newPost = newPost
-                return res.json(newPost)
+                return res.json(PotluckService.serializePotluck(newPost))
             })
             .catch(err => console.log(err))
       })
@@ -51,9 +49,7 @@ potluckRouter
 // GET POTLUCK BY ID
 potluckRouter
     .route('/:potluck_id')
-    //ADD AUTH ROUTER AND CHECK POTLUCKEXISTS
     .all(requireAuth)
-    // .all(checkPotluckExists)
     .get((req, res, next) => {
         PotluckService.getPotluckById(req.app.get('db'), req.params.potluck_id)
         .then(potluck => {

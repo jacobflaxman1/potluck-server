@@ -22,6 +22,18 @@ const ItemService = {
             .returning('*')
             .then(rows => rows[0])
     },
+    serializeItems(items) {
+        return items.map(item => this.serializeItem(item))
+    },
+    serializeItem(item) {
+        return {
+            id: item.item_id,
+            item_name: xss(item.item_name),
+            taken: item.taken,
+            taken_by: item.taken_by,
+            potluck_id: item.potluck_id
+        }
+    }
 }
 
 

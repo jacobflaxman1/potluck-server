@@ -78,14 +78,4 @@ usersRouter
 })
 
 
-//When client makes call it will provide a list of items, need to go through and find 
-//all user names associated with taken_by id
-// usersRouter
-//   .route('/user/:id')
-//   .all(requireAuth)
-//   .get((req, res, next) => {
-//     UsersService.getUserNameByTakenBy(req.app.get('db', ))
-//   })
-//   .then((data) => res.json(data))
-
 module.exports = usersRouter
