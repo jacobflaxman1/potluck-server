@@ -22,4 +22,4 @@ Currently the API supports GET, POST, DELETE, and PATCH endpoints.
 
 ## Screen Shots
 
-![login](https://imgur.com/IQzXKvA "login")
+![login]([img]https://i.imgur.com/IQzXKvA.png[/img] "login")
